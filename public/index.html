@@ -1,41 +1,110 @@
-```html
 <!DOCTYPE html>
 <html>
+<head>
+
+<title>College Complaint Tracker</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+body{
+background:#f4f6fb;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+font-family:Arial;
+}
+
+.box{
+background:white;
+padding:40px;
+width:350px;
+border-radius:10px;
+box-shadow:0 5px 20px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+h2{
+margin-bottom:20px;
+}
+
+input{
+width:100%;
+padding:10px;
+margin-bottom:15px;
+border:1px solid #ccc;
+border-radius:6px;
+}
+
+button{
+width:100%;
+padding:10px;
+background:#2563eb;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+background:#1e40af;
+}
+
+a{
+color:#2563eb;
+text-decoration:none;
+}
+
+</style>
+
+</head>
 
 <body>
 
-<h2>Login</h2>
+<div class="box">
 
-<input id="email">
-<input id="password">
+<h2>College Complaint Tracker</h2>
+
+<input id="email" type="email" placeholder="College Email">
+
+<input id="password" type="password" placeholder="Password">
 
 <button onclick="login()">Login</button>
 
-<p id="msg"></p>
-
+<p style="margin-top:10px;">
+New user?
 <a href="signup.html">Signup</a>
+</p>
+
+</div>
+
 
 <script>
 
 async function login(){
 
-let email=document.getElementById("email").value
-let password=document.getElementById("password").value
+const email=document.getElementById("email").value
+const password=document.getElementById("password").value
 
-let res = await fetch("/login",{
+const res=await fetch("/login",{
 
 method:"POST",
+
 headers:{
 "Content-Type":"application/json"
 },
 
-body:JSON.stringify({email,password})
+body:JSON.stringify({
+email,password
+})
 
 })
 
-let data = await res.json()
+const data=await res.json()
 
-document.getElementById("msg").innerText=data.message
+alert(data.message)
 
 if(data.message==="Login success"){
 
@@ -49,4 +118,3 @@ window.location="dashboard.html"
 
 </body>
 </html>
-```
