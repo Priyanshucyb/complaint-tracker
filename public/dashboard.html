@@ -1,0 +1,77 @@
+```html
+<!DOCTYPE html>
+<html>
+
+<body>
+
+<h2>Submit Complaint</h2>
+
+<input id="title" placeholder="Title">
+
+<br><br>
+
+<textarea id="desc" placeholder="Description"></textarea>
+
+<br><br>
+
+<select id="category">
+
+<option>Electricity</option>
+<option>Internet</option>
+<option>Hostel</option>
+<option>Mess</option>
+
+</select>
+
+<br><br>
+
+<select id="priority">
+
+<option>Low</option>
+<option>Medium</option>
+<option>High</option>
+
+</select>
+
+<br><br>
+
+<input type="file" id="image">
+
+<br><br>
+
+<button onclick="submitComplaint()">Submit</button>
+
+<p id="msg"></p>
+
+<br>
+
+<a href="admin.html">Admin Panel</a>
+
+<script>
+
+async function submitComplaint(){
+
+let formData = new FormData()
+
+formData.append("title",document.getElementById("title").value)
+formData.append("description",document.getElementById("desc").value)
+formData.append("category",document.getElementById("category").value)
+formData.append("priority",document.getElementById("priority").value)
+formData.append("image",document.getElementById("image").files[0])
+
+await fetch("/complaint",{
+
+method:"POST",
+body:formData
+
+})
+
+alert("Complaint submitted")
+
+}
+
+</script>
+
+</body>
+</html>
+```

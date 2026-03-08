@@ -1,0 +1,81 @@
+```html
+<!DOCTYPE html>
+<html>
+
+<body>
+
+<h2>Admin Panel</h2>
+
+<div id="list"></div>
+
+<script>
+
+async function loadComplaints(){
+
+let res = await fetch("/complaints")
+
+let data = await res.json()
+
+let html=""
+
+data.forEach(c=>{
+
+html+=`
+
+<div style="border:1px solid black;margin:10px;padding:10px">
+
+<h3>${c.title}</h3>
+
+<p>${c.description}</p>
+
+<p>Category: ${c.category}</p>
+
+<p>Priority: ${c.priority}</p>
+
+<p>Status: ${c.status}</p>
+
+<img src="uploads/${c.image}" width="200">
+
+<br><br>
+
+<button onclick="updateStatus('${c._id}','Resolved')">
+
+Mark Resolved
+
+</button>
+
+</div>
+
+`
+
+})
+
+document.getElementById("list").innerHTML=html
+
+}
+
+async function updateStatus(id,status){
+
+await fetch("/status",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({id,status})
+
+})
+
+loadComplaints()
+
+}
+
+loadComplaints()
+
+</script>
+
+</body>
+</html>
+```
