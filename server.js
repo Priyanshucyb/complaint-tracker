@@ -12,13 +12,14 @@ app.use(cors())
 app.use(bodyParser.json())
 app.use(express.static("public"))
 
-/* MongoDB */
+/* ---------------- MONGODB CONNECTION ---------------- */
 
 mongoose.connect(process.env.MONGO_URI)
 .then(()=>console.log("MongoDB Connected"))
 .catch(err=>console.log("MongoDB Error:",err))
 
-/* FILE UPLOAD */
+
+/* ---------------- FILE UPLOAD ---------------- */
 
 const storage = multer.diskStorage({
 
@@ -34,7 +35,9 @@ cb(null,Date.now()+"-"+file.originalname)
 
 const upload = multer({storage:storage})
 
-/* USER MODEL */
+
+
+/* ---------------- USER MODEL ---------------- */
 
 const User = mongoose.model("User",{
 
@@ -45,7 +48,8 @@ verified:Boolean
 
 })
 
-/* COMPLAINT MODEL */
+
+/* ---------------- COMPLAINT MODEL ---------------- */
 
 const Complaint = mongoose.model("Complaint",{
 
@@ -62,7 +66,8 @@ default:"Pending"
 
 })
 
-/* EMAIL CONFIG */
+
+/* ---------------- EMAIL CONFIG ---------------- */
 
 const transporter = nodemailer.createTransport({
 
@@ -75,41 +80,45 @@ pass:process.env.EMAIL_PASS
 
 })
 
-/* SEND OTP */
 
-app.post("/send-otp", async (req,res)=>{
+/* ---------------- SEND OTP ---------------- */
+
+app.post("/send-otp",async(req,res)=>{
 
 try{
 
 const {email,password} = req.body
 
-console.log("Signup request received:", email)
+console.log("Signup request:",email)
 
 const otp = otpGenerator.generate(6,{
 upperCase:false,
 specialChars:false
 })
 
-console.log("Generated OTP:", otp)
+console.log("Generated OTP:",otp)
 
 const user = new User({
+
 email,
 password,
 otp,
 verified:false
+
 })
 
 await user.save()
 
-console.log("User saved in DB")
-
 await transporter.sendMail({
+
+from:`Complaint Tracker <${process.env.EMAIL_USER}>`,
 to:email,
 subject:"OTP Verification",
 text:`Your OTP is ${otp}`
+
 })
 
-console.log("Email sent successfully")
+console.log("Email sent")
 
 res.json({message:"OTP sent to email"})
 
@@ -117,13 +126,15 @@ res.json({message:"OTP sent to email"})
 
 console.log("EMAIL ERROR:",error)
 
-res.json({message:"email error check terminal"})
+res.json({message:"Email error check terminal"})
 
 }
 
 })
 
-/* VERIFY OTP */
+
+
+/* ---------------- VERIFY OTP ---------------- */
 
 app.post("/verify-otp",async(req,res)=>{
 
@@ -147,13 +158,19 @@ res.json({message:"Invalid OTP"})
 
 })
 
-/* LOGIN */
+
+
+/* ---------------- LOGIN ---------------- */
 
 app.post("/login",async(req,res)=>{
 
 const {email,password} = req.body
 
-const user = await User.findOne({email,password,verified:true})
+const user = await User.findOne({
+email,
+password,
+verified:true
+})
 
 if(user){
 
@@ -167,9 +184,13 @@ res.json({message:"Invalid login or verify OTP"})
 
 })
 
-/* SUBMIT COMPLAINT */
+
+
+/* ---------------- SUBMIT COMPLAINT ---------------- */
 
 app.post("/complaint",upload.single("image"),async(req,res)=>{
+
+try{
 
 const {title,description,category,priority} = req.body
 
@@ -187,9 +208,19 @@ await complaint.save()
 
 res.json({message:"Complaint submitted"})
 
+}catch(error){
+
+console.log(error)
+
+res.json({message:"Error submitting complaint"})
+
+}
+
 })
 
-/* GET COMPLAINTS */
+
+
+/* ---------------- GET COMPLAINTS ---------------- */
 
 app.get("/complaints",async(req,res)=>{
 
@@ -199,7 +230,9 @@ res.json(complaints)
 
 })
 
-/* UPDATE STATUS */
+
+
+/* ---------------- UPDATE STATUS ---------------- */
 
 app.post("/status",async(req,res)=>{
 
@@ -211,10 +244,42 @@ res.json({message:"Status updated"})
 
 })
 
-/* SERVER */
 
-const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log("Server running on port " + PORT);
-});
+/* ---------------- TEST MAIL ---------------- */
+
+app.get("/testmail",async(req,res)=>{
+
+try{
+
+await transporter.sendMail({
+
+from:`Complaint Tracker <${process.env.EMAIL_USER}>`,
+to:process.env.EMAIL_USER,
+subject:"Test Mail",
+text:"Email working successfully"
+
+})
+
+res.send("Test mail sent")
+
+}catch(err){
+
+console.log(err)
+res.send("Mail error")
+
+}
+
+})
+
+
+
+/* ---------------- SERVER ---------------- */
+
+const PORT = process.env.PORT || 3000
+
+app.listen(PORT,()=>{
+
+console.log("Server running on port",PORT)
+
+})
