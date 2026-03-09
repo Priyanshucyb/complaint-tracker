@@ -70,7 +70,7 @@ service:"gmail",
 
 auth:{
 user:"priyanshugarg9310@gmail.com",
-pass:"jgsostwjkkzilsaw"
+pass:"gnsxkfiizskgzipu"
 }
 
 })
