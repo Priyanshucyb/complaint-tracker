@@ -77,46 +77,47 @@ pass:"jgsostwjkkzilsaw"
 
 /* SEND OTP */
 
-app.post("/send-otp",async(req,res)=>{
+app.post("/send-otp", async (req,res)=>{
 
 try{
 
 const {email,password} = req.body
+
+console.log("Signup request received:", email)
 
 const otp = otpGenerator.generate(6,{
 upperCase:false,
 specialChars:false
 })
 
-console.log("OTP:",otp)
+console.log("Generated OTP:", otp)
 
 const user = new User({
-
 email,
 password,
 otp,
 verified:false
-
 })
 
 await user.save()
 
-await transporter.sendMail({
+console.log("User saved in DB")
 
-from:"priyanshugarg9310@gmail.com",
+await transporter.sendMail({
 to:email,
 subject:"OTP Verification",
 text:`Your OTP is ${otp}`
-
 })
+
+console.log("Email sent successfully")
 
 res.json({message:"OTP sent to email"})
 
 }catch(error){
 
-console.log(error)
+console.log("EMAIL ERROR:",error)
 
-res.json({message:"Email error check terminal"})
+res.json({message:"email error check terminal"})
 
 }
 
