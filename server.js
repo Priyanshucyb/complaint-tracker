@@ -14,9 +14,9 @@ app.use(express.static("public"))
 
 /* MongoDB */
 
-mongoose.connect("mongodb+srv://admin:admin123@cluster0.gkzbo80.mongodb.net/ComplaintDB?retryWrites=true&w=majority")
-.then(()=>console.log("MongoDB Atlas Connected"))
-.catch(err=>console.log(err))
+mongoose.connect(process.env.MONGO_URI)
+.then(()=>console.log("MongoDB Connected"))
+.catch(err=>console.log("MongoDB Error:",err))
 
 /* FILE UPLOAD */
 
